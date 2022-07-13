@@ -7,7 +7,7 @@ const CLIENT_ID = "81a7fe1e-497b-4b99-aef0-eb67192750e9";
 export const ENVIRONMENT = "mypurecloud.com";
 export let userToken = "";
 export let userId = "";
-export let custName = "";
+export let interactionId = "";
 
 function getParameterByName(name) {
   // eslint-disable-next-line
@@ -20,7 +20,7 @@ function getParameterByName(name) {
 }
 
 export const App = () => {
-  const [customerName, setCustomerName] = useState("");
+  const [interactionID, setInteractionID] = useState("");
   const [userID, setUserID] = useState("");
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export const App = () => {
       var accessToken = getParameterByName("access_token");
       userToken = accessToken;
       const cusName = window.sessionStorage.getItem("customer_name"); //load customer data
-      setCustomerName(cusName);
-      custName = cusName;
+      setInteractionID(cusName);
+      interactionId = cusName;
       if (userToken) {
         //make call to get userID to use to set up notification service
         var config = {
@@ -54,7 +54,7 @@ export const App = () => {
       }
     } else {
       //read customer data variable
-      if (window.location.hash && !customerName) {
+      if (window.location.hash && !interactionID) {
         let name = window.location.hash.substring(1);
         window.sessionStorage.setItem("customer_name", name);
       }
@@ -65,13 +65,13 @@ export const App = () => {
         )}&state=${encodeURIComponent(ENVIRONMENT)}`
       );
     }
-  }, [customerName]);
+  }, [interactionID]);
 
   return (
     <div className="App">
       <header className="App-header">
         {userID && <p>{`userID: ${userID}`}</p>}
-        {customerName && <p>{`customer: ${customerName}`}</p>}
+        {interactionID && <p>{`InteractionID: ${interactionID}`}</p>}
         <Channel></Channel>
       </header>
     </div>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { userToken, userId, custName, ENVIRONMENT } from "./grantLogin";
+import { userToken, userId, interactionId, ENVIRONMENT } from "./grantLogin";
 
 export const Channel = () => {
   const [connectURI, setConnectURI] = useState("");
@@ -57,7 +57,7 @@ export const Channel = () => {
 
       channel.onmessage = (event) => {
         let eventData = JSON.parse(event.data);
-        if (eventData.topicName.includes(`v2.users.${userId}.conversations`)) {
+        if (eventData.eventBody.id === interactionId) {
           console.log("relevant event message: ", eventData);
           processEvent(eventData.eventBody);
         } else {
@@ -69,10 +69,6 @@ export const Channel = () => {
 
   function processEvent(eventBody) {
     const participants = eventBody.participants;
-    if (!participants[0].name.includes(custName)) {
-      //conversation not relevant to customer
-      return;
-    }
     let customerState = participants[0].chats[0].state;
     let userState = participants[2].chats[0].state;
     if (customerState === "connected" && userState === "connected") {
