@@ -20,7 +20,7 @@ function getParameterByName(name: string) {
 }
 
 export const App = () => {
-  const [customerName, setCustomerName] = useState<string>("");
+  const [interactionID, setInteractionID] = useState<string>("");
   const [userID, setUserID] = useState<string>("");
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export const App = () => {
       var accessToken = getParameterByName("access_token");
       userToken = accessToken;
       const cusName = window.sessionStorage.getItem("customer_name") ?? ""; //load customer data
-      //setCustomerName(cusName);
+      setInteractionID(cusName);
       custName = cusName;
       if (userToken) {
         //make call to get userID to use to set up notification service
@@ -54,25 +54,24 @@ export const App = () => {
       }
     } else {
       //read customer data variable
-      if (window.location.hash && !customerName) {
+      if (window.location.hash && !interactionID) {
         let name = window.location.hash.substring(1);
-        setCustomerName(name);
         window.sessionStorage.setItem("customer_name", name);
       }
       const redirect_uri = "http://localhost:3003/";
       window.location.assign(
         `https://login.${ENVIRONMENT}/oauth/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
           redirect_uri
-        )}&state=${customerName}`
+        )}&state=${encodeURIComponent(ENVIRONMENT)}`
       );
     }
-  }, [customerName]);
+  }, [interactionID]);
 
   return (
     <div className="App">
       <header className="App-header">
         {userID && <p>{`userID: ${userID}`}</p>}
-        {customerName && <p>{`customer: ${customerName}`}</p>}
+        {interactionID && <p>{`InteractionID: ${interactionID}`}</p>}
         <Channel></Channel>
       </header>
     </div>

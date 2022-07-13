@@ -1,12 +1,17 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { userToken, userId, custName, ENVIRONMENT } from "./grantLogin";
+import {
+  userToken,
+  userId,
+  custName as interactionID,
+  ENVIRONMENT,
+} from "./grantLogin";
 
 export const Channel = () => {
-  const [connectURI, setConnectURI] = useState("");
-  const [channelID, setChannelID] = useState("");
-  const [isListening, setIsListening] = useState(false); // monitor if channel is listening for conversation notifications
-  const [isConnected, setIsConnected] = useState();
+  const [connectURI, setConnectURI] = useState<string>("");
+  const [channelID, setChannelID] = useState<string>("");
+  const [isListening, setIsListening] = useState<boolean>(false); // monitor if channel is listening for conversation notifications
+  const [isConnected, setIsConnected] = useState<boolean | undefined>();
   useEffect(() => {
     if (userToken) {
       axios({
@@ -58,7 +63,7 @@ export const Channel = () => {
 
       channel.onmessage = (event) => {
         let eventData = JSON.parse(event.data);
-        if (eventData.topicName.includes(`v2.users.${userId}.conversations`)) {
+        if (eventData.eventBody.id === interactionID) {
           console.log("relevant event message: ", eventData);
           processEvent(eventData.eventBody);
         } else {
@@ -68,12 +73,8 @@ export const Channel = () => {
     }
   }
 
-  function processEvent(eventBody) {
+  function processEvent(eventBody: any) {
     const participants = eventBody.participants;
-    if (!participants[0].name.includes(custName)) {
-      //conversation not relevant to customer
-      return;
-    }
     let customerState = participants[0].chats[0].state;
     let userState = participants[2].chats[0].state;
     if (customerState === "connected" && userState === "connected") {
