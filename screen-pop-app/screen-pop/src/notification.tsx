@@ -1,73 +1,81 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import {
-  userToken,
-  userId,
-  custName as interactionID,
-  ENVIRONMENT,
-} from "./grantLogin";
+import { ENVIRONMENT } from "./grantLogin";
 
-export const Channel = () => {
-  const [connectURI, setConnectURI] = useState<string>("");
-  const [channelID, setChannelID] = useState<string>("");
-  const [isListening, setIsListening] = useState<boolean>(false); // monitor if channel is listening for conversation notifications
-  const [isConnected, setIsConnected] = useState<boolean | undefined>();
+interface ConversationDetails {
+  token: string;
+  interactionID: string;
+  userID: string;
+}
+
+export const Channel = ({
+  token,
+  interactionID,
+  userID,
+}: ConversationDetails) => {
+  const [chatStatus, setChatStatus] = useState<string>("connected");
   useEffect(() => {
-    if (userToken) {
+    console.log("passed variables: ", token, interactionID, userID);
+    if (token) {
+      //create channel
       axios({
         url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels`,
         method: "POST",
         headers: {
-          Authorization: "Bearer " + userToken,
+          Authorization: "Bearer " + token,
         },
       })
         .then((data) => {
-          setConnectURI(data.data.connectUri);
-          setChannelID(data.data.id);
+          subscribe(data.data.connectUri, data.data.id);
         })
         .catch((error) => {
           console.log("error hit from channel: ", error);
         });
     }
-    //call subscribe
-  }, []);
+    // eslint-disable-next-line
+  }, [token, interactionID, userID]);
 
-  function subscribe() {
+  function subscribe(connectURI: string, channelID: string) {
+    console.log("running subscribe");
+    console.log("connectURI: ", connectURI);
     if (connectURI) {
       const channel = new WebSocket(connectURI);
-      channel.onopen = (event) => {
+      channel.onopen = () => {
         //subscribe to user conversations topic
-        if (!isListening) {
-          axios({
-            url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels/${channelID}/subscriptions`,
-            method: "POST",
-            headers: {
-              Authorization: "Bearer " + userToken,
+        axios({
+          url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels/${channelID}/subscriptions`,
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          data: [
+            {
+              id: `v2.users.${userID}.conversations`, //topic
             },
-            data: [
-              {
-                id: `v2.users.${userId}.conversations`, //topic
-              },
-            ],
+          ],
+        })
+          .then((data) => {
+            console.log("succesful subscription: ", data);
           })
-            .then((data) => {
-              console.log("succesful subscription: ", data);
-              setIsListening(true);
-            })
-            .catch((error) => {
-              console.log("error hit from subscribing: ", error);
-              setIsListening(false);
-            });
-        }
+          .catch((error) => {
+            console.log("error hit from subscribing: ", error);
+          });
       };
 
       channel.onmessage = (event) => {
         let eventData = JSON.parse(event.data);
         if (eventData.eventBody.id === interactionID) {
-          console.log("relevant event message: ", eventData);
-          processEvent(eventData.eventBody);
+          console.log("Critical event message: ", eventData);
+          const connectionState = processEvent(eventData.eventBody);
+          if (!connectionState) {
+            setChatStatus("disconnected");
+            //To load url in iframe use location.assign
+            // window.location.assign("https://developer.genesys.cloud/");
+            window.open("https://developer.genesys.cloud/", "_blank");
+            channel.close();
+          }
         } else {
-          console.log("event message sent");
+          console.log("event message sent: ", eventData);
         }
       };
     }
@@ -78,24 +86,15 @@ export const Channel = () => {
     let customerState = participants[0].chats[0].state;
     let userState = participants[2].chats[0].state;
     if (customerState === "connected" && userState === "connected") {
-      setIsConnected(true);
-      console.log("set connected to true");
+      return true;
     } else {
-      setIsConnected(false);
-
-      //To load url in script page use location.assign
-      // window.location.assign("https://developer.genesys.cloud/");
-      window.open("https://developer.genesys.cloud/", "_blank");
-      console.log("set connected to false");
+      return false;
     }
   }
 
-  subscribe(); //TO-DO-4
   return (
     <>
-      <p>{connectURI && "ConnectURI: " + connectURI}</p>
-      <p>{channelID && "Channelid: " + channelID}</p>
-      <p>{"isConnected: " + isConnected}</p>
+      <p>{"chat status: " + chatStatus}</p>
     </>
   );
 };
