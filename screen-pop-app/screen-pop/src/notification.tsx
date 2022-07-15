@@ -13,7 +13,7 @@ export const Channel = ({
   interactionID,
   userID,
 }: ConversationDetails) => {
-  const [chatStatus, setChatStatus] = useState<string>("connected");
+  const [chatStatus, setChatStatus] = useState<string>("");
   useEffect(() => {
     console.log("passed variables: ", token, interactionID, userID);
     if (token) {
@@ -70,7 +70,7 @@ export const Channel = ({
           if (!connectionState) {
             setChatStatus("disconnected");
             //To load url in iframe use location.assign
-            // window.location.assign("https://developer.genesys.cloud/");
+            //window.location.assign("https://developer.genesys.cloud/");
             window.open("https://developer.genesys.cloud/", "_blank");
             channel.close();
           }

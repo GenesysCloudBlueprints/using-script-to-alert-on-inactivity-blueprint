@@ -68,7 +68,7 @@ export const App = () => {
         )}&state=${encodeURIComponent(interactionID)}`
       );
     }
-  }, [token]);
+  }, [token, interactionID]);
 
   if (userID && interactionID && token) {
     conversationDetails = {
