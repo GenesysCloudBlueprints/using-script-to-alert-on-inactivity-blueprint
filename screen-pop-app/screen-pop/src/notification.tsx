@@ -8,14 +8,23 @@ interface ConversationDetails {
   userID: string;
 }
 
+interface IProps {
+  close?: boolean;
+}
 export const Channel = ({
   token,
   interactionID,
   userID,
 }: ConversationDetails) => {
   const [chatStatus, setChatStatus] = useState<string>("");
+  const [closeChat, setCloseChat] = useState(false);
   useEffect(() => {
-    console.log("passed variables: ", token, interactionID, userID);
+    let completed = localStorage.getItem(interactionID); //check if script has run already by retrieving saved data using unique interactionID key
+    if (completed) {
+      setChatStatus(completed);
+      setCloseChat(true);
+      return;
+    }
     if (token) {
       //create channel
       axios({
@@ -69,9 +78,11 @@ export const Channel = ({
           const connectionState = processEvent(eventData.eventBody);
           if (!connectionState) {
             setChatStatus("disconnected");
+            localStorage.setItem(interactionID, "disconnected");
             //To load url in iframe use location.assign
             //window.location.assign("https://developer.genesys.cloud/");
-            window.open("https://developer.genesys.cloud/", "_blank");
+
+            //window.open("https://developer.genesys.cloud/", "_blank"); //screenpop url
             channel.close();
           }
         } else {
@@ -95,6 +106,29 @@ export const Channel = ({
   return (
     <>
       <p>{"chat status: " + chatStatus}</p>
+      {chatStatus === "disconnected" && <PopupTimer close={closeChat} />}
     </>
   );
+};
+
+const PopupTimer = ({ close }: IProps) => {
+  const [seconds, setSeconds] = useState(0);
+  const [screenPop, setScreenPop] = useState(true);
+
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setSeconds((seconds) => seconds + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+
+  if (seconds > 10 || close) {
+    if (screenPop) {
+      window.open("https://developer.genesys.cloud/", "_blank"); //screenpop url
+      setScreenPop(false);
+    }
+    return <p>END CHAT!</p>;
+  }
+
+  return <p>{`Conversation ended (elapsed Time): ${seconds} `}</p>;
 };
