@@ -1,34 +1,30 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
-import { ENVIRONMENT } from "./grantLogin";
+import React, { useState, useEffect, useRef } from "react";
 
+const SCREENPOP_URL = "https://developer.genesys.cloud/";
 interface ConversationDetails {
   token: string;
   interactionID: string;
   userID: string;
 }
 
-interface IProps {
-  close?: boolean;
-}
 export const Channel = ({
   token,
   interactionID,
   userID,
 }: ConversationDetails) => {
   const [chatStatus, setChatStatus] = useState<string>("");
-  const [closeChat, setCloseChat] = useState(false);
+  const prevStatus = useRef("");
+  const chat = useRef("");
+  let changedConnectionState: boolean = false;
+  let loaded = localStorage.getItem(interactionID)
   useEffect(() => {
-    let completed = localStorage.getItem(interactionID); //check if script has run already by retrieving saved data using unique interactionID key
-    if (completed) {
-      setChatStatus(completed);
-      setCloseChat(true);
-      return;
-    }
+    
+    if(loaded) return 
     if (token) {
       //create channel
       axios({
-        url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels`,
+        url: `https://api.mypurecloud.com/api/v2/notifications/channels`,
         method: "POST",
         headers: {
           Authorization: "Bearer " + token,
@@ -45,14 +41,12 @@ export const Channel = ({
   }, [token, interactionID, userID]);
 
   function subscribe(connectURI: string, channelID: string) {
-    console.log("running subscribe");
-    console.log("connectURI: ", connectURI);
     if (connectURI) {
       const channel = new WebSocket(connectURI);
       channel.onopen = () => {
         //subscribe to user conversations topic
         axios({
-          url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels/${channelID}/subscriptions`,
+          url: `https://api.mypurecloud.com/api/v2/notifications/channels/${channelID}/subscriptions`,
           method: "POST",
           headers: {
             Authorization: "Bearer " + token,
@@ -64,7 +58,12 @@ export const Channel = ({
           ],
         })
           .then((data) => {
-            console.log("succesful subscription: ", data);
+            console.log("succesful subscription: ", data); 
+            if (chat.current.length === 0){
+              localStorage.setItem(interactionID, 'loaded')
+              chat.current = "connected";
+              setChatStatus(chat.current)
+            } 
           })
           .catch((error) => {
             console.log("error hit from subscribing: ", error);
@@ -72,18 +71,28 @@ export const Channel = ({
       };
 
       channel.onmessage = (event) => {
+        console.log('listening now')
+        prevStatus.current = chat.current
+        if (chat.current === "disconnected"){
+            return;
+        } 
+
         let eventData = JSON.parse(event.data);
+        console.log(
+          "chatStatus: ",
+          chat.current,
+          "state: ",
+          changedConnectionState, 
+          'prevStatus: ', prevStatus.current
+        );
+
         if (eventData.eventBody.id === interactionID) {
           console.log("Critical event message: ", eventData);
           const connectionState = processEvent(eventData.eventBody);
           if (!connectionState) {
-            setChatStatus("disconnected");
-            localStorage.setItem(interactionID, "disconnected");
-            //To load url in iframe use location.assign
-            //window.location.assign("https://developer.genesys.cloud/");
-
-            //window.open("https://developer.genesys.cloud/", "_blank"); //screenpop url
-            channel.close();
+            chat.current = "disconnected";
+            setChatStatus(chat.current);
+            changedConnectionState = true;
           }
         } else {
           console.log("event message sent: ", eventData);
@@ -96,39 +105,59 @@ export const Channel = ({
     const participants = eventBody.participants;
     let customerState = participants[0].chats[0].state;
     let userState = participants[2].chats[0].state;
-    if (customerState === "connected" && userState === "connected") {
-      return true;
-    } else {
-      return false;
-    }
+    return customerState !== "disconnected" && userState !== "disconnected";
   }
 
   return (
     <>
-      <p>{"chat status: " + chatStatus}</p>
-      {chatStatus === "disconnected" && <PopupTimer close={closeChat} />}
+      <p> {chatStatus && "chat status: " + chat.current}</p>
+      {chat.current === 'disconnected' && prevStatus.current === 'connected'  && <PopupTimer />}
     </>
   );
 };
 
-const PopupTimer = ({ close }: IProps) => {
-  const [seconds, setSeconds] = useState(0);
-  const [screenPop, setScreenPop] = useState(true);
+const PopupTimer = () => {
+  const [seconds, setSeconds] = useState(1);
+  const TIMEOUT_NUM = 10
 
   useEffect(() => {
-    let interval = setInterval(() => {
-      setSeconds((seconds) => seconds + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  });
-
-  if (seconds > 10 || close) {
-    if (screenPop) {
-      window.open("https://developer.genesys.cloud/", "_blank"); //screenpop url
-      setScreenPop(false);
+    let timeout: any;
+    if (seconds < TIMEOUT_NUM) {
+      timeout = setTimeout(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
     }
+    return () => clearTimeout(timeout);
+  }, [seconds]);
+
+  if (seconds >= TIMEOUT_NUM) {
+    //To load url in iframe use location.assign
+    //window.location.assign("https://developer.genesys.cloud/");
+    console.log("opening window");
+    //window.open(SCREENPOP_URL, "_blank"); //screenpop url
     return <p>END CHAT!</p>;
   }
 
   return <p>{`Conversation ended (elapsed Time): ${seconds} `}</p>;
 };
+
+function saveItem(key : string, value: string, ttl: number = 7200000 ){
+  const now = new Date() 
+  const item = {
+    value: value, 
+    expiry: now.getTime() + ttl
+  }
+  localStorage.setItem(key, JSON.stringify(item))
+}
+
+function getItem(key: string){
+  const itemStr = localStorage.getItem(key)
+  if(!itemStr) return null 
+  const item = JSON.parse(itemStr)
+  const now = new Date() 
+  if(now.getTime() > item.expiry){
+    localStorage.removeItem(key)
+    return null 
+  }
+  return item.value
+}
