@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
 import { Channel } from "./notification";
+import { ConfigData, Response, ConversationManager } from "./ConversationManager";
 
 const CLIENT_ID = "81a7fe1e-497b-4b99-aef0-eb67192750e9";
 
@@ -20,17 +21,29 @@ export const App = () => {
   const [userID, setUserID] = useState<string>("");
   const [token, setToken] = useState("");
   let conversationDetails: any;
+  let loaded = useRef<boolean>(false);  
+  let configData = useRef<Response | ConfigData>() ; 
 
   useEffect(() => {
-    console.log('location: ', window.location.hash)
     if (window.location.hash.includes("access_token")) {
       var accessToken = getParameterByName("access_token");
-      var state = getParameterByName("state")
-      setInteractionID(state);
-      console.log('state: ',state)
+      var id = getParameterByName("state")
+      setInteractionID(id);
       setToken(accessToken);
-      console.log("token: ", token);
-      console.log("InteractionID: ", interactionID);
+
+      configData.current = ConversationManager.getItem(interactionID)
+      if(configData.current === Response.DELETED) return 
+
+      if(configData.current !== Response.NO_CONVERSATIONS && configData.current !== Response.NO_INTERACTIONID){ //conversation was found in localStorage 
+        console.log('loaded previously: ', configData.current.lastState)
+        loaded.current = true; 
+      }
+      else{// save the conversation to localStorage 
+         ConversationManager.saveItem(interactionID, 'initiating')
+         console.log('saving config data (loaded): ', loaded.current )
+      } 
+
+
       if (token) {
         //make call to get userID to use to set up notification service
         var config = {
@@ -54,15 +67,15 @@ export const App = () => {
       }
     } else {
       //read customer data variable
-      let name =""; 
+      let id =""; 
       if (window.location.hash) {
-        name = window.location.hash.substring(1);
+        id = window.location.hash.substring(1);
       }
       const redirect_uri = "http://localhost:3003/";
       window.location.assign(
         `https://login.mypurecloud.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
           redirect_uri
-        )}&state=${encodeURIComponent(name)}`
+        )}&state=${encodeURIComponent(id)}`
       );
     }
   }, [token, interactionID]);
@@ -72,12 +85,13 @@ export const App = () => {
       token: token,
       interactionID: interactionID,
       userID: userID,
+      configData: configData.current
     };
   }
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="App-header"> 
         {userID && <p>{`userID: ${userID}`}</p>}
         {interactionID && <p>{`InteractionID: ${interactionID}`}</p>}
         {conversationDetails && <Channel {...conversationDetails} />}
