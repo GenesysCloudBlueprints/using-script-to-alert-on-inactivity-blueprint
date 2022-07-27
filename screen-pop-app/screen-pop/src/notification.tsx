@@ -16,6 +16,7 @@ export const Channel = ({
   userID,
   configData
 }: ConversationDetails) => {
+   // eslint-disable-next-line
   const [chatStatus, setChatStatus] = useState<string>(""); 
   const prevStatus = useRef(configData?.lastState || "");
   const chatState = useRef(configData?.lastState || ""); 
@@ -23,7 +24,7 @@ export const Channel = ({
     if(chatState.current === 'disconnected') return 
     if (token) {
       let channelExists: boolean = false; 
-      
+
       axios({ //get existing channels 
         url: `https://api.mypurecloud.com/api/v2/notifications/channels?includechannels=${token}`,
         method: "GET", 
@@ -115,7 +116,6 @@ export const Channel = ({
       };
 
       socket.onmessage = (event) => {
-        prevStatus.current = chatState.current
         if (chatState.current === "disconnected"){
             return;
         } 

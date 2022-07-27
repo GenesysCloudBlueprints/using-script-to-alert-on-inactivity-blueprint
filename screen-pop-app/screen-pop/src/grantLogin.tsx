@@ -21,7 +21,6 @@ export const App = () => {
   const [userID, setUserID] = useState<string>("");
   const [token, setToken] = useState("");
   let conversationDetails: any;
-  let loaded = useRef<boolean>(false);  
   let configData = useRef<Response | ConfigData>() ; 
 
   useEffect(() => {
@@ -33,16 +32,7 @@ export const App = () => {
 
       configData.current = ConversationManager.getItem(interactionID)
       if(configData.current === Response.DELETED) return 
-
-      if(configData.current !== Response.NO_CONVERSATIONS && configData.current !== Response.NO_INTERACTIONID){ //conversation was found in localStorage 
-        console.log('loaded previously: ', configData.current.lastState)
-        loaded.current = true; 
-      }
-      else{// save the conversation to localStorage 
-         ConversationManager.saveItem(interactionID, 'initiating')
-         console.log('saving config data (loaded): ', loaded.current )
-      } 
-
+      if(configData.current === Response.NO_CONVERSATIONS || configData.current === Response.NO_INTERACTIONID)ConversationManager.saveItem(interactionID, 'initiating')
 
       if (token) {
         //make call to get userID to use to set up notification service
