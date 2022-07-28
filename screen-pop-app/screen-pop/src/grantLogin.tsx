@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
 import { Channel } from "./notification";
-import { ConfigData, Response, ConversationManager } from "./ConversationManager";
+import { ConfigData,  ConversationManager } from "./ConversationManager";
 
 const CLIENT_ID = "81a7fe1e-497b-4b99-aef0-eb67192750e9";
+const ENVIRONMENT = "mypurecloud.com"
 
 function getParameterByName(name: string) {
   // eslint-disable-next-line
@@ -21,7 +22,7 @@ export const App = () => {
   const [userID, setUserID] = useState<string>("");
   const [token, setToken] = useState("");
   let conversationDetails: any;
-  let configData = useRef<Response | ConfigData>() ; 
+  let configData = useRef<null | ConfigData>() ; 
 
   useEffect(() => {
     if (window.location.hash.includes("access_token")) {
@@ -29,11 +30,8 @@ export const App = () => {
       var id = getParameterByName("state")
       setInteractionID(id);
       setToken(accessToken);
-
-      configData.current = ConversationManager.getItem(interactionID)
-      if(configData.current === Response.DELETED) return 
-      if(configData.current === Response.NO_CONVERSATIONS || configData.current === Response.NO_INTERACTIONID)ConversationManager.saveItem(interactionID, 'initiating')
-
+      configData.current = ConversationManager.getItem(interactionID) 
+    
       if (token) {
         //make call to get userID to use to set up notification service
         var config = {
@@ -43,7 +41,7 @@ export const App = () => {
         };
         axios
           .get(
-            `https://api.mypurecloud.com/api/v2/users/me?expand=token`,
+            `https://api.${ENVIRONMENT}/api/v2/users/me?expand=token`,
             config
           )
           .then((data) => {
@@ -63,7 +61,7 @@ export const App = () => {
       }
       const redirect_uri = "http://localhost:3003/";
       window.location.assign(
-        `https://login.mypurecloud.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
+        `https://login.${ENVIRONMENT}/oauth/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
           redirect_uri
         )}&state=${encodeURIComponent(id)}`
       );

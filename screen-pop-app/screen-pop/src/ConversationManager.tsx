@@ -8,18 +8,12 @@ interface Manager {
     [key: string]: ConfigData;
 }
 
-export enum Response {
-    NO_CONVERSATIONS, //no conversation saved in local storage 
-    NO_INTERACTIONID, //interaction not present in local storage 
-    DELETED, //interaction has been removed from local storage
-}
-
 export class ConversationManager {
 
 
 static conversationKey = "conversation"
 
-static saveItem(interactionID : string, lastState: string, ttl: number = 7200000 ) : void {
+static saveItem(interactionID : string, lastState: string, ttl: number = (1000 * 60 * 60 * 24) ) : void {
   const now = new Date() 
   const value = {
     lastState: lastState, 
@@ -37,20 +31,20 @@ var dataBank : Manager = JSON.parse(rawValue);
   localStorage.setItem(this.conversationKey, JSON.stringify(dataBank))
 }
 
-static getItem(interactionID: string) : Response | ConfigData{
+static getItem(interactionID: string) : null | ConfigData{
     var rawValue = localStorage.getItem(this.conversationKey)
-  if (!rawValue) return Response.NO_CONVERSATIONS
+  if (!rawValue) return null
 
   var dataBank : Manager = JSON.parse(rawValue);
     //check if item is present in local storage 
-if(!dataBank.hasOwnProperty(interactionID)) return Response.NO_INTERACTIONID
+if(!dataBank.hasOwnProperty(interactionID)) return null
 
   const item = dataBank[interactionID]
   const now = new Date() 
   if(item.expiry && now.getTime() > item.expiry){ //remove item from list 
-    delete dataBank[interactionID]
+    delete dataBank[interactionID] 
     localStorage.setItem(this.conversationKey, JSON.stringify(dataBank))
-    return Response.DELETED
+    return null
   }
 
   return item

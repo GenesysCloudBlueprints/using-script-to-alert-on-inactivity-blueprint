@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { ConfigData, ConversationManager } from "./ConversationManager";
 
-// const SCREENPOP_URL = "https://developer.genesys.cloud/";
+const ENVIRONMENT = "mypurecloud.com"
+const SCREENPOP_URL = "https://developer.genesys.cloud/";
 interface ConversationDetails {
   token: string;
   interactionID: string;
@@ -17,7 +18,7 @@ export const Channel = ({
   configData
 }: ConversationDetails) => {
    // eslint-disable-next-line
-  const [chatStatus, setChatStatus] = useState<string>(""); 
+  const [chatStatusDisplay, setChatStatusDisplay] = useState<string>(""); //this property is to trigger new display of chatState 
   const prevStatus = useRef(configData?.lastState || "");
   const chatState = useRef(configData?.lastState || ""); 
   useEffect(() => {
@@ -26,7 +27,7 @@ export const Channel = ({
       let channelExists: boolean = false; 
 
       axios({ //get existing channels 
-        url: `https://api.mypurecloud.com/api/v2/notifications/channels?includechannels=${token}`,
+        url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels?includechannels=${token}`,
         method: "GET", 
         headers: {
           Authorization: "Bearer " + token, 
@@ -39,7 +40,7 @@ export const Channel = ({
             let channelID = response.data.entities[0].id
             let connectUri = response.data.entities[0].connectUri
             axios({
-              url: `https://api.mypurecloud.com/api/v2/notifications/channels/${channelID}/subscriptions`, 
+              url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels/${channelID}/subscriptions`, 
               method: "GET", 
               headers: {
                 Authorization: "Bearer " + token, 
@@ -63,7 +64,7 @@ export const Channel = ({
       if (!channelExists) {
        //create channel and subscribe to conversations 
       axios({
-        url: `https://api.mypurecloud.com/api/v2/notifications/channels`,
+        url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels`,
         method: "POST",
         headers: {
           Authorization: "Bearer " + token,
@@ -84,12 +85,10 @@ export const Channel = ({
   //listen for notification 
   function listenToNotification(connectURI: string, channelID: string, subscriptionExists?: boolean ) {
       const socket = new WebSocket(connectURI); 
-      socket.onopen = () => {
-        if (!subscriptionExists) {
-
+    socket.onopen = () => {
         //subscribe to user conversations topic
           axios({
-          url: `https://api.mypurecloud.com/api/v2/notifications/channels/${channelID}/subscriptions`,
+          url: `https://api.${ENVIRONMENT}/api/v2/notifications/channels/${channelID}/subscriptions`,
           method: "POST",
           headers: {
             Authorization: "Bearer " + token,
@@ -105,13 +104,12 @@ export const Channel = ({
             prevStatus.current = chatState.current
             chatState.current = "connected";
             ConversationManager.saveItem(interactionID, chatState.current)
-            setChatStatus(chatState.current)
+            setChatStatusDisplay(chatState.current)
             
           })
           .catch((error) => {
             console.log("error hit from subscribing: ", error);
           });
-        }
         
       };
 
@@ -127,7 +125,7 @@ export const Channel = ({
           const connectionState = processEvent(eventData.eventBody);
           if (!connectionState) {
             chatState.current = "disconnected";
-            setChatStatus(chatState.current);
+            setChatStatusDisplay(chatState.current);
             ConversationManager.saveItem(interactionID, chatState.current)
           }
         } else {
@@ -152,26 +150,31 @@ export const Channel = ({
 };
 
 const PopupTimer = () => {
+  //
   const [seconds, setSeconds] = useState(1);
+  const startTime = useRef(new Date().getTime())
+
   const TIMEOUT_NUM = 10
+  // const [difference, setDifference] = useState(0)
+  // const startTime = useRef< number >(new Date().getTime())
 
   useEffect(() => {
     let timeout: any;
-    if (seconds < TIMEOUT_NUM) {
-      timeout = setTimeout(() => {
-        setSeconds((seconds) => seconds + 1);
+    timeout = setInterval(() => {
+      let elapsedTime = Math.floor((new Date().getTime() - startTime.current) / 1000)
+        if (elapsedTime <= TIMEOUT_NUM) {
+          setSeconds(elapsedTime);
+        }
+        else {
+          //To load url in iframe use location.assign
+          //window.location.assign("https://developer.genesys.cloud/");
+          console.log("opening window");
+          //window.open(SCREENPOP_URL, "_blank"); //screenpop url/
+          clearInterval(timeout)
+        }
       }, 1000);
-    }
-    return () => clearTimeout(timeout);
-  }, [seconds]);
-
-  if (seconds >= TIMEOUT_NUM) {
-    //To load url in iframe use location.assign
-    //window.location.assign("https://developer.genesys.cloud/");
-    console.log("opening window");
-    //window.open(SCREENPOP_URL, "_blank"); //screenpop url
-    return <p>END CHAT!</p>;
-  }
+    //eslint-disable-next-line
+  }, []);
 
   return <p>{`Conversation ended (elapsed Time): ${seconds} `}</p>;
 };
