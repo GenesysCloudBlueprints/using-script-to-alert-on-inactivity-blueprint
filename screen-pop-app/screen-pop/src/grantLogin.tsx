@@ -33,7 +33,7 @@ export const App = () => {
       configData.current = ConversationManager.getItem(interactionID) 
     
       if (token) {
-        //make call to get userID to use to set up notification service
+        //make call to get userID 
         var config = {
           headers: {
             Authorization: "bearer " + token,

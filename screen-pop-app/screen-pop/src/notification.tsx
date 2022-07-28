@@ -34,7 +34,6 @@ export const Channel = ({
         }
       })
         .then((response) => {
-          console.log("check for existing channels: ", response.data.entities[0])
           if (response.data.entities[0]) {// channel already exists 
             channelExists = true; 
             let channelID = response.data.entities[0].id
@@ -47,7 +46,6 @@ export const Channel = ({
               }
             })
             .then((response) => {
-              console.log("existing subscriptions: ", response.data)
               if (response.data.entities) {
                 let subExists = true; 
                 listenToNotification(connectUri, channelID, subExists) 
@@ -100,7 +98,6 @@ export const Channel = ({
           ],
         })
           .then((data) => {
-            console.log("succesful subscription: ", data); 
             prevStatus.current = chatState.current
             chatState.current = "connected";
             ConversationManager.saveItem(interactionID, chatState.current)
@@ -121,7 +118,6 @@ export const Channel = ({
         let eventData = JSON.parse(event.data);
 
         if (eventData.eventBody.id === interactionID) {
-          console.log("Critical event message: ", eventData);
           const connectionState = processEvent(eventData.eventBody);
           if (!connectionState) {
             chatState.current = "disconnected";
@@ -168,8 +164,7 @@ const PopupTimer = () => {
         else {
           //To load url in iframe use location.assign
           //window.location.assign("https://developer.genesys.cloud/");
-          console.log("opening window");
-          //window.open(SCREENPOP_URL, "_blank"); //screenpop url/
+          window.open(SCREENPOP_URL, "_blank"); //screenpop url/
           clearInterval(timeout)
         }
       }, 1000);
