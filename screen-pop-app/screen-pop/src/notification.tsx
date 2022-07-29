@@ -163,7 +163,7 @@ const PopupTimer = () => {
         }
         else {
           //To load url in iframe use location.assign
-          //window.location.assign("https://developer.genesys.cloud/");
+          //window.location.assign(SCREENPOP_URL);
           window.open(SCREENPOP_URL, "_blank"); //screenpop url/
           clearInterval(timeout)
         }
