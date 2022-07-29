@@ -1,5 +1,5 @@
 ---
-title: Screenpop a URL when a conversation ends on Genesys Cloud
+title: Using Scripts to screenpop a URL when after inactivity when a conversation ends on Genesys Cloud
 author: zino.onokpise
 indextype: blueprint
 icon: blueprint
@@ -8,11 +8,11 @@ summary: |
   This Genesys Cloud Developer Blueprint explains how to create an embeddable app in scripts to set up a notification channel and listen for events. In this blueprint, a subscription is made to a user's active conversations. Events from this topic are then used to track the state of the conversation and alerts to the user when a conversation has ended and the chat should be closed
 ---
 
-This Genesys Cloud Developer Blueprint explains how to create an embeddable app in scripts to set up a notification channel and listen for events. In this blueprint, a subscription is made to a user's active conversations. Events from this topic are then used to track the state of the conversation and alerts to the user when a conversation has ended and the chat should be closed
+This Genesys Cloud Developer Blueprint explains how to create an embeddable app in scripts, set up a notification channel and listen for events. In this blueprint, a subscription is made to a user's active conversations. Events from this topic are then used to track the state of the conversation and alerts to the user when a conversation has ended and the chat should be closed
 
 ### Scenario
 
-You notice that your agents are not always on call but calls are getting stacked on queues, you find out its because agents are not closing their chats when a conversation ends. So you need a mechanism to automatically prompt your agents to wrap up the chat. ([Inspired by URL Open at conversation end](https://developer.genesys.cloud/forum/t/url-open-at-conversation-end/15204))
+You notice that your agents are not always on call but calls are getting stacked on queues. You find out its because agents are not closing their chats when a conversation ends. So you need a mechanism to automatically prompt your agents to wrap up the chat. ([Inspired by URL Open at conversation end](https://developer.genesys.cloud/forum/t/url-open-at-conversation-end/15204))
 
 ### Solution
 
@@ -59,5 +59,11 @@ You notice that your agents are not always on call but calls are getting stacked
 
 ### Set a URL to screen pop 
 
-1. Replace the variable `SCREENPOP_URL` with your desired pop up URL 
+1. Replace the variable `SCREENPOP_URL` with your desired URL 
     ![image of notification.tsx](images/screenpop.png "image of where to replace SCREENPOP_URL")
+
+
+### Test the solution
+
+ You can create a chat using [Genesys Web chat/messaging Tools](https://developer.genesys.cloud/devapps/web-chat-messenger) and test what a customer and agent interaction would look like with your script enabled
+ 
