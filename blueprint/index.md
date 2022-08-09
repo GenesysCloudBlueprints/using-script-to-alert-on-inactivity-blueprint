@@ -1,18 +1,18 @@
 ---
-title: Using Scripts to screenpop a URL when after inactivity when a conversation ends on Genesys Cloud
+title: Using a Genesys Cloud agent script to alert on inactivity
 author: zino.onokpise
 indextype: blueprint
 icon: blueprint
 category: 6
 summary: |
-  This Genesys Cloud Developer Blueprint explains how to create an embeddable app in scripts to set up a notification channel and listen for events. In this blueprint, a subscription is made to a user's active conversations. Events from this topic are then used to track the state of the conversation and alerts to the user when a conversation has ended and the chat should be closed
+  This Genesys Cloud Developer Blueprint explains how to create an embeddable app that runs within a Genesys Cloud agent script. This embeddable app will set up a notification and listen for messaging conversation events from an agent's active messaging conversations. These events will be used to track the state of a messaging conversation and notifies the agent when a conversation has been inactive
 ---
 
-This Genesys Cloud Developer Blueprint explains how to create an embeddable app in scripts, set up a notification channel and listen for events. In this blueprint, a subscription is made to a user's active conversations. Events from this topic are then used to track the state of the conversation and alerts to the user when a conversation has ended and the chat should be closed
+This Genesys Cloud Developer Blueprint explains how to create an embeddable app that runs within a Genesys Cloud agent script. This embeddable app will set up a notification and listen for messaging conversation events from an agent's active messaging conversations. These events will be used to track the state of a messaging conversation and notifies the agent when a conversation has been inactive
 
 ### Scenario
 
-You notice that your agents are not always on call but calls are getting stacked on queues. You find out its because agents are not closing their chats when a conversation ends. So you need a mechanism to automatically prompt your agents to wrap up the chat. ([Inspired by URL Open at conversation end](https://developer.genesys.cloud/forum/t/url-open-at-conversation-end/15204))
+You notice that your agents are not always on queue but calls are getting stacked on queues. You find out its because agents are not closing their chats when a conversation ends. So you need a mechanism to automatically prompt your agents to wrap up the chat. ([Inspired by URL Open at conversation end](https://developer.genesys.cloud/forum/t/url-open-at-conversation-end/15204))
 
 ### Solution
 
@@ -65,5 +65,5 @@ You notice that your agents are not always on call but calls are getting stacked
 
 ### Test the solution
 
- You can create a chat using [Genesys Web chat/messaging Tools](https://developer.genesys.cloud/devapps/web-chat-messenger) and test what a customer and agent interaction would look like with your script enabled
+ You can create a chat using [Genesys Web chat/messaging Tools](https://developer.genesys.cloud/devapps/web-chat-messenger) and test what a customer and agent interaction would look like with your script enabled 
  
