@@ -3,6 +3,7 @@ title: Using a Genesys Cloud agent script to alert on inactivity
 author: zino.onokpise
 indextype: blueprint
 icon: blueprint
+image: images/screenpop.png
 category: 6
 summary: |
   This Genesys Cloud Developer Blueprint explains how to create an embeddable app that runs within a Genesys Cloud agent script. This embeddable app will set up a notification and listen for messaging conversation events from an agent's active messaging conversations. These events will be used to track the state of a messaging conversation and notifies the agent when a conversation has been inactive
