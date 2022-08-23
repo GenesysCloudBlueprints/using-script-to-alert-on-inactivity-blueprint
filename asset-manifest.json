@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/using-script-to-alert-on-inactivity-blueprint/static/css/main.ca57846c.css",
-    "main.js": "/using-script-to-alert-on-inactivity-blueprint/static/js/main.37f1d6e0.js",
+    "main.js": "/using-script-to-alert-on-inactivity-blueprint/static/js/main.5b2e45e7.js",
     "index.html": "/using-script-to-alert-on-inactivity-blueprint/index.html",
     "main.ca57846c.css.map": "/using-script-to-alert-on-inactivity-blueprint/static/css/main.ca57846c.css.map",
-    "main.37f1d6e0.js.map": "/using-script-to-alert-on-inactivity-blueprint/static/js/main.37f1d6e0.js.map"
+    "main.5b2e45e7.js.map": "/using-script-to-alert-on-inactivity-blueprint/static/js/main.5b2e45e7.js.map"
   },
   "entrypoints": [
     "static/css/main.ca57846c.css",
-    "static/js/main.37f1d6e0.js"
+    "static/js/main.5b2e45e7.js"
   ]
 }
