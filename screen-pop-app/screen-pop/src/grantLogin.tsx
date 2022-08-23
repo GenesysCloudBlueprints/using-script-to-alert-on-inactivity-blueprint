@@ -55,7 +55,8 @@ export const GrantLogin = () => {
 			if (window.location.hash) {
 				id = window.location.hash.substring(1);
 			}
-			const redirect_uri = 'http://localhost:3003/';
+			const redirect_uri =
+				'https://genesyscloudblueprints.github.io/using-script-to-alert-on-inactivity-blueprint/';
 			//redirects to app after oauth
 			window.location.assign(
 				`https://login.${
