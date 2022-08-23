@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/using-script-to-alert-on-inactivity-blueprint%20/static/css/main.ca57846c.css",
+    "main.js": "/using-script-to-alert-on-inactivity-blueprint%20/static/js/main.37f1d6e0.js",
+    "index.html": "/using-script-to-alert-on-inactivity-blueprint%20/index.html",
+    "main.ca57846c.css.map": "/using-script-to-alert-on-inactivity-blueprint%20/static/css/main.ca57846c.css.map",
+    "main.37f1d6e0.js.map": "/using-script-to-alert-on-inactivity-blueprint%20/static/js/main.37f1d6e0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ca57846c.css",
+    "static/js/main.37f1d6e0.js"
+  ]
+}
