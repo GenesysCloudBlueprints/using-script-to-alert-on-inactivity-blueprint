@@ -5,8 +5,7 @@ import { Channel } from './notification';
 import { ConfigData, ConversationManager } from './ConversationManager';
 
 function getParameterByName(name: string) {
-	// eslint-disable-next-line
-	name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+	name = name.replace(/[\\[]]/, '\\[').replace(/[\]]/, '\\]');
 	var regex = new RegExp('[\\#&]' + name + '=([^&#]*)'),
 		results = regex.exec(window.location.hash);
 	return results === null
