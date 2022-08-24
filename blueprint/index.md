@@ -32,39 +32,37 @@ You notice that your agents are not always on queue but calls are getting stacke
 
 ### Specialized Knowledge
 
-- Administrator-level knowledge of Genesys Cloud
 - Experience using the Genesys Cloud Platform API
 
 ### Genesys Cloud Account
 
-- A Genesys Cloud license. For more information, see [Genesys Cloud Pricing](https://www.genesys.com/pricing "Opens the Genesys Cloud pricing page") in the Genesys website.
+- A Genesys Cloud license. For more information, see [Genesys Cloud Pricing](https://www.genesys.com/pricing 'Opens the Genesys Cloud pricing page') in the Genesys website.
 
 ## Implementation steps
 
 ### Download the repository containing the project files
 
-1.  Clone the [using script to alert on inactivity blueprint repository](https://github.com/GenesysCloudBlueprints/using-script-to-alert-on-inactivity-blueprint "Opens the using-script-to-alert-on-inactivity-blueprint blueprint repository in GitHub").
+1.  Clone the [using script to alert on inactivity blueprint repository](https://github.com/GenesysCloudBlueprints/using-script-to-alert-on-inactivity-blueprint 'Opens the using-script-to-alert-on-inactivity-blueprint blueprint repository in GitHub').
 
 ### Set up Implicit Grant Login
 
-1. Follow the [instructions](https://help.mypurecloud.com/articles/create-an-oauth-client/ "link to setup OAuth") on how to set up Implicit Grant Login
+1. Follow the [instructions](https://help.mypurecloud.com/articles/create-an-oauth-client/ 'link to setup OAuth') on how to set up Implicit Grant Login
 2. When selecting Grant Types, choose `Token Implicit Grant (Browser)`
 3. After a Client ID has been generated, replace the ClientID variable in `grantLogin.tsx`
-    ![image of grantLogin.tsx](images/ClientID.png "image of where to replace ClientID" )
+   ![image of grantLogin.tsx](images/ClientID.png 'image of where to replace ClientID')
 
-###  Set up Script 
+### Set up Script
 
-1. When [setting up the script](https://help.mypurecloud.com/articles/about-scripting/ "link to set up scripts") add a webpage 
-2. Insert the URL of the screen pop app in the webpage source 
-3. Insert the variable `Scripter.InteractionID` 
+1. When [setting up the script](https://help.mypurecloud.com/articles/about-scripting/ 'link to set up scripts') add a webpage
+2. Insert the URL of the screen pop app in the webpage source
+3. Insert the variable `Scripter.InteractionID`
+4. Iframes on Scripts support only applications over HTTPS, a quick and easy way to do this is to deploy your app with [github pages](https://github.blog/changelog/2020-09-03-build-and-deploy-github-pages-from-any-branch/).
 
-### Set a URL to screen pop 
+### Set a URL to screen pop
 
-1. Replace the variable `SCREENPOP_URL` with your desired URL 
-    ![image of notification.tsx](images/screenpop.png "image of where to replace SCREENPOP_URL")
-
+1. Replace the variable `SCREENPOP_URL` with your desired URL
+   ![image of notification.tsx](images/screenpop.png 'image of where to replace SCREENPOP_URL')
 
 ### Test the solution
 
- You can create a chat using [Genesys Web chat/messaging Tools](https://developer.genesys.cloud/devapps/web-chat-messenger) and test what a customer and agent interaction would look like with your script enabled 
- 
+You can create a chat using [Genesys Web chat/messaging Tools](https://developer.genesys.cloud/devapps/web-chat-messenger) and test what a customer and agent interaction would look like with your script enabled
