@@ -18,8 +18,8 @@ export const Channel = ({
 }: ConversationDetails) => {
 	// eslint-disable-next-line
 	const [chatStatusDisplay, setChatStatusDisplay] = useState<string>(''); //this property is to trigger new display of chatState
-	const prevStatus = useRef(configData?.lastState || '');
-	const chatState = useRef(configData?.lastState || '');
+	const prevStatus = useRef(configData?.lastState || ''); //previous chat status
+	const chatState = useRef(configData?.lastState || ''); //curerent chat status
 	useEffect(() => {
 		if (chatState.current === 'disconnected') return;
 		if (token) {
