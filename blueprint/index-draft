@@ -8,6 +8,13 @@ category: 6
 summary: |
   This Genesys Cloud Developer Blueprint explains how to create an embeddable app that runs within a Genesys Cloud agent script. This embeddable app will set up a notification and listen for messaging conversation events from an agent's active messaging conversations. These events will be used to track the state of a messaging conversation and notifies the agent when a conversation has been inactive
 ---
+:::{"alert":"primary","title":"About Genesys Cloud Blueprints","autoCollapse":false} 
+Genesys Cloud blueprints were built to help you jump-start building an application or integrating with a third-party partner. 
+Blueprints are meant to outline how to build and deploy your solutions, not a production-ready turn-key solution.
+ 
+For more details on Genesys Cloud blueprint support and practices 
+please see our Genesys Cloud blueprint [FAQ](https://developer.genesys.cloud/blueprints/faq)sheet.
+:::
 
 This Genesys Cloud Developer Blueprint explains how to create an embeddable app that runs within a Genesys Cloud agent script. This embeddable app will set up a notification and listen for messaging conversation events from an agent's active messaging conversations. These events will be used to track the state of a messaging conversation and notifies the agent when a conversation has been inactive
 
